@@ -1,0 +1,45 @@
+
+#section-main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#div-login  {
+    border: 2px solid #174962;
+    border-radius: 20px;
+    min-width: 40%;
+    margin-top: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#form-login  {
+    text-align: center;
+}
+
+#form-login * {
+    display: block;
+    margin: 3%;
+}
+
+#form-login input {
+    display: block;
+    margin: 3%;
+    
+    z-index: 0;
+}
+
+#btn-login {
+    display: block;
+    margin: 10px auto;
+    width: 50%; 
+}
+
+#img-logo {
+    width: 150px;
+    margin: 0 auto 0 auto;
+    padding-left: 1.5%;
+    z-index: 1;
+}
