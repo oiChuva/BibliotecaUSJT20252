@@ -1,15 +1,17 @@
 import random
 import uuid
 from pathlib import Path
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Form
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
+from passlib.context import CryptContext
 from app.database import engine
 from sqlalchemy import text
 from datetime import datetime
 import uvicorn
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 app = FastAPI()
 BASE_DIR = Path(__file__).resolve().parent
 local_html_path = BASE_DIR / "assets" / "html" / "login.html"
@@ -50,3 +52,45 @@ if __name__ == "__main__":
 @app.get("/test-page", response_class=HTMLResponse)
 async def test_page():
     return FileResponse(local_html_path, media_type="text/html")
+
+@app.post("/login")
+async def login(email: str = Form(...), password: str = Form(...)):
+    """
+    Login apenas com email e senha.
+    Espera um form HTML com campos name="email" e name="password".
+    """
+    # consulta usuário pelo email
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT id_usuario, senha, nome_completo FROM usuarios WHERE email = :email"),
+            {"email": email}
+        )
+        row = result.fetchone()
+
+    if not row:
+        raise HTTPException(status_code=401, detail="Credenciais inválidas")
+
+    # obtém a senha armazenada (pode vir como tuple/row)
+    try:
+        stored = row["senha"]
+    except Exception:
+        stored = row[1]
+
+    # se o valor for bytes, decodifica
+    if isinstance(stored, (bytes, bytearray)):
+        try:
+            stored = stored.decode()
+        except Exception:
+            pass
+
+    # verifica senha: se estiver em formato bcrypt usa passlib, caso contrário compara direto
+    if isinstance(stored, str) and (stored.startswith("$2a$") or stored.startswith("$2b$") or stored.startswith("$2y$")):
+        valid = pwd_context.verify(password, stored)
+    else:
+        valid = (password == stored)
+
+    if not valid:
+        raise HTTPException(status_code=401, detail="Credenciais inválidas")
+
+    # em produção devolva token/JWT em vez de dados sensíveis
+    return JSONResponse({"status": "ok", "user_id": row["id_usuario"], "name": row.get("nome_completo")})
