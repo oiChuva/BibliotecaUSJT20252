@@ -14,7 +14,8 @@ import uvicorn
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 app = FastAPI()
 BASE_DIR = Path(__file__).resolve().parent
-local_html_path = BASE_DIR / "assets" / "html" / "login.html"
+login_html_path = BASE_DIR / "assets" / "html" / "login.html"
+second_html_path = BASE_DIR / "assets" / "html" / "second.html"
 app.mount("/assets", StaticFiles(directory=BASE_DIR / "assets"), name="assets")
 
 # def test_databaseGET(id):
@@ -51,7 +52,7 @@ if __name__ == "__main__":
 
 @app.get("/test-page", response_class=HTMLResponse)
 async def test_page():
-    return FileResponse(local_html_path, media_type="text/html")
+    return FileResponse(login_html_path, media_type="text/html")
 
 @app.post("/login")
 async def login(email: str = Form(...), password: str = Form(...)):
@@ -94,3 +95,7 @@ async def login(email: str = Form(...), password: str = Form(...)):
 
     # em produção devolva token/JWT em vez de dados sensíveis
     return JSONResponse({"status": "ok", "user_id": row["id_usuario"], "name": row.get("nome_completo")})
+
+@app.get("/second-page", response_class=HTMLResponse)
+async def test_page():
+    return FileResponse(second_html_path, media_type="text/html")
