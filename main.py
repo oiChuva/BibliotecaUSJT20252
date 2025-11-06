@@ -3,6 +3,7 @@ import uuid
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from app.database import engine
 from sqlalchemy import text
@@ -12,7 +13,7 @@ import uvicorn
 app = FastAPI()
 BASE_DIR = Path(__file__).resolve().parent
 local_html_path = BASE_DIR / "assets" / "html" / "login.html"
-
+app.mount("/assets", StaticFiles(directory=BASE_DIR / "assets"), name="assets")
 
 # def test_databaseGET(id):
 #     with engine.connect() as conn:
