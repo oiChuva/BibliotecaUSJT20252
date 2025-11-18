@@ -1,0 +1,34 @@
+
+.content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#div-cadastro  {
+    padding: 1%;
+    border: 2px solid #174962;
+    border-radius: 20px;
+    min-width: 40%;
+    max-width: 60%;
+    margin-top: 5%;
+}
+
+#form-cadastro  {
+    text-align: center;
+}
+
+
+#btn-cadastro {
+    display: block;
+    margin: 10px auto;
+    width: 50%;
+}
+
+.text-center{
+    text-align: center;
+    width: 30%;
+    margin: 0 35%
+}
+
+
