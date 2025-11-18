@@ -10,6 +10,7 @@ from app.database import engine
 from sqlalchemy import text
 from datetime import datetime
 import uvicorn
+from fastapi.responses import RedirectResponse
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 app = FastAPI()
@@ -66,7 +67,7 @@ async def login(email: str = Form(...), password: str = Form(...)):
             text("SELECT id_usuario, senha, nome_completo FROM usuarios WHERE email = :email"),
             {"email": email}
         )
-        row = result.fetchone()
+    row = result.mappings().fetchone()
 
     if not row:
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
@@ -93,9 +94,28 @@ async def login(email: str = Form(...), password: str = Form(...)):
     if not valid:
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
 
+    
+    return RedirectResponse(
+    url=f"/second-page?name={row['nome_completo']}&id={row['id_usuario']}",
+    status_code=303
+    )
+
     # em produção devolva token/JWT em vez de dados sensíveis
-    return JSONResponse({"status": "ok", "user_id": row["id_usuario"], "name": row.get("nome_completo")})
+    #return JSONResponse({"status": "ok", "user_id": row["id_usuario"], "name": row.get("nome_completo")})
 
 @app.get("/second-page", response_class=HTMLResponse)
-async def test_page():
-    return FileResponse(second_html_path, media_type="text/html")
+async def second_page(request: Request):
+    name = request.query_params.get("name", "Usuário")
+    user_id = request.query_params.get("id", "Desconhecido")
+
+    html = f"""
+    <html>
+        <head><title>Second Page</title></head>
+        <body>
+            <h1>Bem-vindo, {name}!</h1>
+            <p>Seu ID é: {user_id}</p>
+        </body>
+    </html>
+    """
+
+    return HTMLResponse(html)
