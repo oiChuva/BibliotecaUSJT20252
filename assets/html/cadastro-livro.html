@@ -19,7 +19,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
 
-            <a class="navbar-brand" href="#">Biblioteca</a>
+            <a class="navbar-brand" href="/livros">Biblioteca</a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,7 +29,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Adicionar Livro</a>
+                        <a class="nav-link" href="/cadastro-livro">Adicionar Livro</a>
                     </li>
                 </ul>
             </div>
@@ -38,7 +38,7 @@
 
     <div class="content">
         <div id="div-cadastro">
-            <form action="" id="form-cadastro">
+            <form action="/cadastrar-livro" method="POST" id="form-cadastro">
                 <h1>Cadastro de Livro</h1>
 
                 <div class="row">
@@ -107,7 +107,7 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary" id="btn-cadastro">ADICIONAR</button>
+                <button type="submit" class="btn btn-primary" id="btn-cadastro">ADICIONAR</button>
             </form>
         </div>
     </div>
