@@ -3,7 +3,8 @@ from flask import Flask, request, redirect, send_file, send_from_directory, abor
 from passlib.context import CryptContext
 from app.database import engine
 from sqlalchemy import text
-from datetime import datetime
+from datetime import datetime, date
+import json
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -76,6 +77,29 @@ def second_page():
     user_id = request.args.get("id", "")
 
     return render_template("livros.html", name=name, user_id=user_id)
+
+
+# req trazer livros
+@app.route("/buscar-livros", methods=["GET"])
+def buscar_livros():
+
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT * FROM livros"))
+        rows = result.mappings().all()  # lista de dicts
+    livros = []
+    for row in rows:
+        livro = dict(row)
+
+        for key, value in livro.items():
+            if isinstance(value, (datetime, date)):
+                livro[key] = value.isoformat()
+        livros.append(livro)
+
+    return Response(
+        json.dumps(livros, ensure_ascii=False, indent=4),
+        mimetype="application/json"
+    )
+
 
 
 
