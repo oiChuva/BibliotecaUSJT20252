@@ -102,8 +102,19 @@ def cadastrar_livro():
     disponivel_compra = 1 if data.get("disponivel_compra") == "on" else 0
     disponivel_emprestimo = 1 if data.get("disponivel_emprestimo") == "on" else 0
 
-    if not titulo or not autor:
-        return Response("Título e Autor são obrigatórios.", status=400)
+    if isbn:
+        with engine.connect() as conn:
+            query = conn.execute(
+                text("SELECT 1 FROM livros WHERE isbn = :isbn"),
+                {"isbn": isbn}
+            ).fetchone()
+
+        if query:
+            return render_template(
+                "cadastro-livro.html",
+                error=f"O ISBN {isbn} já está cadastrado.",
+                form=data
+            )
 
     ano_publicacao = int(ano_publicacao) if ano_publicacao else None
     quantidade_estoque = int(quantidade_estoque) if quantidade_estoque else 0
