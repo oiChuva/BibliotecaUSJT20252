@@ -36,6 +36,11 @@
                         <a class="nav-link" href="/cadastro-livro">Adicionar Livro</a>
                     </li>
                 </ul>
+
+            <div class="d-flex align-items-center">
+                <img src="/assets/images/avatar.png" class="rounded-circle" width="36" height="36" alt="avatar">
+                <span class="text-white ms-2">{{ name.split()[0] }}</span>
+            </div>
             </div>
         </div>
     </nav>
@@ -109,102 +114,23 @@
             </div>
 
             <div class="div-lista-livros">
+                {% for livro in livros %}
                 <div class="card" style="width: 18rem;">
                     <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
+
+                        <h5 class="card-title">{{ livro.titulo }}</h5>
+
+                        <p class="card-text">{{ livro.autor }}</p>
+
+                        <p class="card-text">{{ livro.genero }}</p>
+
+                        <a href="#" class="btn btn-primary">
+                            Ação com o livro
+                        </a>
+
                     </div>
                 </div>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
-                    </div>
-                </div>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
-                    </div>
-                </div>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
-                    </div>
-                </div>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
-                    </div>
-                </div>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
-                    </div>
-                </div>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
-                    </div>
-                </div>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
-                    </div>
-                </div>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
-                    </div>
-                </div>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
-                    </div>
-                </div>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
-                    </div>
-                </div>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Nome do livro</h5>
-                        <p class="card-text">Autor</p>
-                        <p class="card-text">Aqui podemos colocar uma pequena sinopse do livro.</p>
-                        <a href="#" class="btn btn-primary">Ação com o liivro</a>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </main>
     </div>

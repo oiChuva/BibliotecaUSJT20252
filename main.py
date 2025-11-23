@@ -1,30 +1,35 @@
 from pathlib import Path
-from flask import Flask, request, redirect, send_file, send_from_directory, abort, Response, render_template, url_for
+from flask import Flask, request, redirect, send_file, send_from_directory, abort, Response, render_template, url_for, session
 from passlib.context import CryptContext
 from app.database import engine
 from sqlalchemy import text
 from datetime import datetime, date
 import json
+import os 
+from decorators import *
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 BASE_DIR = Path(__file__).resolve().parent
 ASSETS_DIR = BASE_DIR / "assets"
 LOGIN_HTML = ASSETS_DIR / "html" / "login.html"
-SECOND_HTML = ASSETS_DIR / "html" / "second.html"
+
 app = Flask(__name__, template_folder=str(BASE_DIR / "assets" / "html"))
+app.secret_key = os.urandom(32)  # necessária para usar session
 
 # serve static assets under /assets/...
 @app.route("/assets/<path:filename>")
 def assets(filename):
     return send_from_directory(ASSETS_DIR, filename)
 
-# serve login page
-@app.route("/test-page", methods=["GET"])
-def test_page():
-    if LOGIN_HTML.exists():
-        return send_file(LOGIN_HTML)
-    return Response("<h1>Login page not found</h1>", status=404)
+@app.route("/")
+def home():
+    return redirect(url_for("login"))
+
+# login GET
+@app.route("/login", methods=["GET"])
+def login_page():
+    return render_template("login.html")
 
 # login POST
 @app.route("/login", methods=["POST"])
@@ -44,7 +49,8 @@ def login():
         row = result.mappings().fetchone()
 
     if not row:
-        abort(401)
+        return render_template("login.html", erro="Email ou senha inválidos!")
+
 
     stored = row.get("senha")
 
@@ -61,28 +67,41 @@ def login():
         valid = (password == stored)
 
     if not valid:
-        abort(401)
+        return render_template("login.html", erro="Erro ao descriptografar a senha.")
 
-    # LOGIN OK → enviar dados ao second.html usando render_template
-    return render_template(
-        "livros.html",
-        name=row.get("nome_completo"),
-        user_id=row.get("id_usuario")
-    )
+    # LOGIN OK → armazenar os dados na session e redirecionar para a pagina principal
+    session["user_id"] = row.get("id_usuario")
+    session["user_name"] = row.get("nome_completo")
+    return redirect(url_for("livros_lista_page"))
 
-# second page (GET – opcional)
 @app.route("/livros", methods=["GET"])
-def second_page():
-    name = request.args.get("name", "")
-    user_id = request.args.get("id", "")
+@login_required
+def livros_lista_page():
+    user_name = session.get("user_name")
+    user_id = session.get("user_id")
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT * FROM livros"))
+        rows = result.mappings().all()
+    livros = []
+    for row in rows:
+        livro = dict(row)
 
-    return render_template("livros.html", name=name, user_id=user_id)
+        # converter datas para string
+        for key, value in livro.items():
+            if isinstance(value, (datetime, date)):
+                livro[key] = value.isoformat()
+
+        livros.append(livro)
+
+    return render_template("livros.html", name=user_name, user_id=user_id, livros=livros)
 
 @app.route("/cadastro-livro", methods=["GET"])
+@login_required
 def cadastro_livro():
-    return render_template("cadastro-livro.html", name='name', user_id='user_id')
+    return render_template("cadastro-livro.html")
 
-@app.route("/cadastrar-livro", methods=["POST"])
+@app.route("/cadastro-livro", methods=["POST"])
+@login_required
 def cadastrar_livro():
 
     data = request.form
@@ -150,7 +169,7 @@ def cadastrar_livro():
             "disponivel_emprestimo": disponivel_emprestimo
         })
 
-    return redirect(url_for("second_page"))
+    return redirect(url_for("livros_lista_page"))
 
 
 
@@ -180,3 +199,4 @@ def buscar_livros():
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8000, debug=True)
+
