@@ -3,7 +3,7 @@ import os
 from datetime import datetime, date
 from pathlib import Path
 
-from flask import Flask, request, send_from_directory, abort, Response, render_template
+from flask import Flask, request, send_from_directory, abort, Response, render_template, flash
 from passlib.context import CryptContext
 from sqlalchemy import text
 
@@ -44,7 +44,7 @@ def login():
     password = request.form.get("password", "")
 
     if not email or not password:
-        abort(400)
+        return render_template("login.html", erro="Email e senha não podems er vazios.")
 
     # verify from DB
     with engine.connect() as conn:
@@ -103,6 +103,7 @@ def livros_lista_page():
     }
 
     order_by = request.args.get("order_by")
+
     direction = request.args.get("direction", "asc").lower()
     if direction not in ("asc", "desc"):
         direction = "asc"
@@ -122,6 +123,8 @@ def livros_lista_page():
 
     if order_by in valid_order_columns:
         sql += f" ORDER BY {order_by} {direction}"
+    elif order_by in (None, "", "null"):
+        sql += f" ORDER BY id_livro {direction}"
 
     with engine.connect() as conn:
         result = conn.execute(text(sql), params)
@@ -242,7 +245,8 @@ def livro_detalhes(id_livro):
         ).mappings().fetchone()
 
     if not result:
-        abort(404)
+        flash("Não foi possível encontrar o livro em nossa base de dados.", "erro")
+        return redirect(url_for("livros_lista_page"))
 
     livro = dict(result)
 
