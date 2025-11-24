@@ -37,81 +37,111 @@
                     </li>
                 </ul>
 
-            <div class="d-flex align-items-center">
-                <img src="/assets/images/avatar.png" class="rounded-circle" width="36" height="36" alt="avatar">
-                <span class="text-white ms-2">{{ name.split()[0] }}</span>
-            </div>
+                <div class="d-flex align-items-center">
+                    <img src="/assets/images/avatar.png" class="rounded-circle" width="36" height="36" alt="avatar">
+                    <span class="text-white ms-2">{{ name.split()[0] }}</span>
+                </div>
             </div>
         </div>
     </nav>
 
     <div class="row">
 
-        <aside id="aside-filter" class="col-12 col-md-2 bg-light p-4 ">
+        <aside id="aside-filter" class="col-12 col-md-2 bg-light p-4">
 
             <h4 class="mb-3">Filtros</h4>
 
-            <input type="text" class="form-control mb-2" placeholder="Título">
-            <input type="text" class="form-control mb-2" placeholder="Subtítulo">
-            <input type="text" class="form-control mb-2" placeholder="Autor">
-            <input type="text" class="form-control mb-2" placeholder="Editora">
-            <input type="number" class="form-control mb-2" placeholder="Ano de Publicação">
-            <input type="text" class="form-control mb-2" placeholder="Gênero">
-            <input type="text" class="form-control mb-2" placeholder="Edição">
-            <input type="text" class="form-control mb-2" placeholder="ISBN">
-            <input type="number" class="form-control mb-2" placeholder="Qtde Estoque">
-            <input type="number" step="0.01" class="form-control mb-2" placeholder="Preço Compra (R$)">
-            <input type="number" step="0.01" class="form-control mb-2" placeholder="Preço Empréstimo (R$)">
+            <form method="GET" action="/livros">
 
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" checked>
-                <label class="form-check-label">Disponível para Compra</label>
-            </div>
+                <input type="text" class="form-control mb-2" name="titulo" placeholder="Título"
+                       value="{{ filtros.titulo or '' }}">
+                <input type="text" class="form-control mb-2" name="subtitulo" placeholder="Subtítulo"
+                       value="{{ filtros.subtitulo or '' }}">
+                <input type="text" class="form-control mb-2" name="autor" placeholder="Autor"
+                       value="{{ filtros.autor or '' }}">
+                <input type="text" class="form-control mb-2" name="editora" placeholder="Editora"
+                       value="{{ filtros.editora or '' }}">
+                <input type="number" class="form-control mb-2" name="ano_publicacao" placeholder="Ano de Publicação"
+                       value="{{ filtros.ano_publicacao or '' }}">
+                <input type="text" class="form-control mb-2" name="genero" placeholder="Gênero"
+                       value="{{ filtros.genero or '' }}">
+                <input type="text" class="form-control mb-2" name="edicao" placeholder="Edição"
+                       value="{{ filtros.edicao or '' }}">
+                <input type="text" class="form-control mb-2" name="isbn" placeholder="ISBN"
+                       value="{{ filtros.isbn or '' }}">
+                <input type="number" class="form-control mb-2" name="quantidade_estoque" placeholder="Qtde Estoque"
+                       value="{{ filtros.quantidade_estoque or '' }}">
+                <input type="number" step="0.01" class="form-control mb-2" name="preco_compra"
+                       placeholder="Preço Compra (R$)" value="{{ filtros.preco_compra or '' }}">
+                <input type="number" step="0.01" class="form-control mb-2" name="preco_emprestimo"
+                       placeholder="Preço Empréstimo (R$)" value="{{ filtros.preco_emprestimo or '' }}">
 
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" checked>
-                <label class="form-check-label">Disponível para Empréstimo</label>
-            </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="disponivel_compra" value="1" {% if
+                           filtros.disponivel_compra %}checked{% endif %}>
+                    <label class="form-check-label">Disponível para Compra</label>
+                </div>
 
-            <div class="d-flex">
-                <button class="btn btn-secondary w-50 m-1">Limpar</button>
-                <button class="btn btn-primary w-75 m-1">Filtrar</button>
-            </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="disponivel_emprestimo" value="1" {% if
+                           filtros.disponivel_emprestimo %}checked{% endif %}>
+                    <label class="form-check-label">Disponível para Empréstimo</label>
+                </div>
+
+                <div class="d-flex">
+                    <a href="/livros" class="btn btn-secondary w-50 m-1">Limpar</a>
+                    <button class="btn btn-primary w-75 m-1" type="submit">Filtrar</button>
+                </div>
+
+            </form>
 
         </aside>
 
 
         <main class="col-12 col-md-10 p-4">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <form id="filterForm" method="GET" action="/livros">
 
-                <h4 class="mb-0">Lista de Livros</h4>
+                {% for key, value in filtros.items() %}
+                {% if value %}
+                <input type="hidden" name="{{ key }}" value="{{ value }}">
+                {% endif %}
+                {% endfor %}
 
-                <div class="d-flex gap-2">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0">Lista de Livros</h4>
 
-                    <select class="form-select" style="width: 200px;">
-                        <option value="" disabled selected>Ordenar por</option>
-                        <option value="titulo">Título</option>
-                        <option value="subtitulo">Subtítulo</option>
-                        <option value="autor">Autor</option>
-                        <option value="editora">Editora</option>
-                        <option value="ano_publicacao">Ano de Publicação</option>
-                        <option value="genero">Gênero</option>
-                        <option value="edicao">Edição</option>
-                        <option value="isbn">ISBN</option>
-                        <option value="quantidade_estoque">Qtde Estoque</option>
-                        <option value="preco_compra">Preço Compra</option>
-                        <option value="preco_emprestimo">Preço Empréstimo</option>
-                    </select>
+                    <div class="d-flex gap-2">
 
-                    <select class="form-select" style="width: 150px;">
-                        <option value="asc">Crescente</option>
-                        <option value="desc">Decrescente</option>
-                    </select>
+                        <select class="form-select" style="width: 200px;" name="order_by"
+                                onchange="document.getElementById('filterForm').submit()">
+
+                            <option value="" disabled {% if not order_by %}selected{% endif %}>
+                                Ordenar por
+                            </option>
+
+                            {% for campo in [
+                            'titulo','subtitulo','autor','editora','ano_publicacao','genero',
+                            'edicao','isbn','quantidade_estoque','preco_compra','preco_emprestimo'
+                            ] %}
+                            <option value="{{ campo }}" {% if campo==order_by %}selected{% endif %}>
+                                {{ campo | replace('_',' ') | title }}
+                            </option>
+                            {% endfor %}
+                        </select>
+
+                        <select class="form-select" style="width: 150px;" name="direction"
+                                onchange="document.getElementById('filterForm').submit()">
+
+                            <option value="asc" {% if direction=='asc' %}selected{% endif %}>Crescente</option>
+                            <option value="desc" {% if direction=='desc' %}selected{% endif %}>Decrescente</option>
+
+                        </select>
+
+                    </div>
 
                 </div>
-
-            </div>
+            </form>
 
             <div class="div-lista-livros">
                 {% for livro in livros %}
