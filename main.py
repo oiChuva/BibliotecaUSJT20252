@@ -1,11 +1,13 @@
-from pathlib import Path
-from flask import Flask, request, redirect, send_file, send_from_directory, abort, Response, render_template, url_for, session
-from passlib.context import CryptContext
-from app.database import engine
-from sqlalchemy import text
-from datetime import datetime, date
 import json
-import os 
+import os
+from datetime import datetime, date
+from pathlib import Path
+
+from flask import Flask, request, send_from_directory, abort, Response, render_template
+from passlib.context import CryptContext
+from sqlalchemy import text
+
+from app.database import engine
 from decorators import *
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -17,19 +19,23 @@ LOGIN_HTML = ASSETS_DIR / "html" / "login.html"
 app = Flask(__name__, template_folder=str(BASE_DIR / "assets" / "html"))
 app.secret_key = os.urandom(32)  # necessária para usar session
 
+
 # serve static assets under /assets/...
 @app.route("/assets/<path:filename>")
 def assets(filename):
     return send_from_directory(ASSETS_DIR, filename)
 
+
 @app.route("/")
 def home():
     return redirect(url_for("login"))
+
 
 # login GET
 @app.route("/login", methods=["GET"])
 def login_page():
     return render_template("login.html")
+
 
 # login POST
 @app.route("/login", methods=["POST"])
@@ -50,7 +56,6 @@ def login():
 
     if not row:
         return render_template("login.html", erro="Email ou senha inválidos!")
-
 
     stored = row.get("senha")
 
@@ -73,6 +78,7 @@ def login():
     session["user_id"] = row.get("id_usuario")
     session["user_name"] = row.get("nome_completo")
     return redirect(url_for("livros_lista_page"))
+
 
 @app.route("/livros", methods=["GET"])
 @login_required
@@ -110,8 +116,8 @@ def livros_lista_page():
             params[campo] = f"%{valor}%"
 
     valid_order_columns = {
-        "titulo","subtitulo","autor","editora","ano_publicacao","genero",
-        "edicao","isbn","quantidade_estoque","preco_compra","preco_emprestimo"
+        "titulo", "subtitulo", "autor", "editora", "ano_publicacao", "genero",
+        "edicao", "isbn", "quantidade_estoque", "preco_compra", "preco_emprestimo"
     }
 
     if order_by in valid_order_columns:
@@ -151,10 +157,10 @@ def cadastro_livro():
         user_id=user_id
     )
 
+
 @app.route("/cadastro-livro", methods=["POST"])
 @login_required
 def cadastrar_livro():
-
     data = request.form
 
     titulo = data.get("titulo")
@@ -223,11 +229,39 @@ def cadastrar_livro():
     return redirect(url_for("livros_lista_page"))
 
 
+@app.route("/livro/<int:id_livro>", methods=["GET"])
+@login_required
+def livro_detalhes(id_livro):
+    user_name = session.get("user_name")
+    user_id = session.get("user_id")
+
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT * FROM livros WHERE id_livro = :id"),
+            {"id": id_livro}
+        ).mappings().fetchone()
+
+    if not result:
+        abort(404)
+
+    livro = dict(result)
+
+    # converter datas se houver
+    for k, v in livro.items():
+        if isinstance(v, (datetime, date)):
+            livro[k] = v.isoformat()
+
+    return render_template(
+        "detalhes-livro.html",
+        name=user_name,
+        user_id=user_id,
+        livro=livro
+    )
+
 
 # req trazer livros
 @app.route("/buscar-livros", methods=["GET"])
 def buscar_livros():
-
     with engine.connect() as conn:
         result = conn.execute(text("SELECT * FROM livros"))
         rows = result.mappings().all()  # lista de dicts
@@ -246,8 +280,5 @@ def buscar_livros():
     )
 
 
-
-
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8000, debug=True)
-

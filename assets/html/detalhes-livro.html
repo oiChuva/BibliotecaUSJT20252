@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <title>Detalhes do Livro</title>
+
+    <style>
+        .campo-label { font-weight: bold; color: #444; }
+        .campo-container { margin-bottom: 12px; }
+        .card-livro { max-width: 700px; margin: 40px auto; }
+
+
+    </style>
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+
+        <a class="navbar-brand" href="/livros">Biblioteca</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/cadastro-livro">Adicionar Livro</a>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center">
+                <img src="/assets/images/avatar.png" class="rounded-circle" width="36" height="36" alt="avatar">
+                <span class="text-white ms-2">{{ name.split()[0] }}</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <div class="card card-livro shadow">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">{{ livro.titulo }}</h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="campo-container">
+                <span class="campo-label">Subtítulo:</span>
+                <span>{{ livro.subtitulo or "—" }}</span>
+            </div>
+
+            <div class="campo-container">
+                <span class="campo-label">Autor:</span>
+                <span>{{ livro.autor }}</span>
+            </div>
+
+            <div class="campo-container">
+                <span class="campo-label">Editora:</span>
+                <span>{{ livro.editora or "—" }}</span>
+            </div>
+
+            <div class="campo-container">
+                <span class="campo-label">Ano de Publicação:</span>
+                <span>{{ livro.ano_publicacao or "—" }}</span>
+            </div>
+
+            <div class="campo-container">
+                <span class="campo-label">Gênero:</span>
+                <span>{{ livro.genero or "—" }}</span>
+            </div>
+
+            <div class="campo-container">
+                <span class="campo-label">Edição:</span>
+                <span>{{ livro.edicao or "—" }}</span>
+            </div>
+
+            <div class="campo-container">
+                <span class="campo-label">ISBN:</span>
+                <span>{{ livro.isbn }}</span>
+            </div>
+
+            <div class="campo-container">
+                <span class="campo-label">Quantidade em Estoque:</span>
+                <span>{{ livro.quantidade_estoque }}</span>
+            </div>
+
+            <div class="campo-container">
+                <span class="campo-label">Preço de Compra:</span>
+                <span>R$ {{ livro.preco_compra }}</span>
+            </div>
+
+            <div class="campo-container">
+                <span class="campo-label">Preço de Empréstimo:</span>
+                <span>R$ {{ livro.preco_emprestimo }}</span>
+            </div>
+
+            <div class="campo-container">
+                <span class="campo-label">Disponível para Compra:</span>
+                <span>{{ "Sim" if livro.disponivel_compra else "Não" }}</span>
+            </div>
+
+            <div class="campo-container">
+                <span class="campo-label">Disponível para Empréstimo:</span>
+                <span>{{ "Sim" if livro.disponivel_emprestimo else "Não" }}</span>
+            </div>
+
+        </div>
+
+        <div class="card-footer text-end">
+            <a href="/livros" class="btn btn-secondary">Voltar</a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
