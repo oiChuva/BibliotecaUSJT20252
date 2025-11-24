@@ -143,7 +143,13 @@ def livros_lista_page():
 @app.route("/cadastro-livro", methods=["GET"])
 @login_required
 def cadastro_livro():
-    return render_template("cadastro-livro.html")
+    user_name = session.get("user_name")
+    user_id = session.get("user_id")
+    return render_template(
+        "cadastro-livro.html",
+        name=user_name,
+        user_id=user_id
+    )
 
 @app.route("/cadastro-livro", methods=["POST"])
 @login_required
