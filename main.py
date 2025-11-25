@@ -3,7 +3,7 @@ import os
 from datetime import datetime, date
 from pathlib import Path
 
-from flask import Flask, request, send_from_directory, abort, Response, render_template, flash
+from flask import Flask, request, send_from_directory, Response, render_template
 from passlib.context import CryptContext
 from sqlalchemy import text
 
@@ -245,12 +245,10 @@ def livro_detalhes(id_livro):
         ).mappings().fetchone()
 
     if not result:
-        flash("Não foi possível encontrar o livro em nossa base de dados.", "erro")
         return redirect(url_for("livros_lista_page"))
 
     livro = dict(result)
 
-    # converter datas se houver
     for k, v in livro.items():
         if isinstance(v, (datetime, date)):
             livro[k] = v.isoformat()
@@ -261,6 +259,114 @@ def livro_detalhes(id_livro):
         user_id=user_id,
         livro=livro
     )
+
+
+@app.route("/editar-livro/<int:id_livro>", methods=["GET"])
+@login_required
+def editar_livro_page(id_livro):
+    user_name = session.get("user_name")
+    user_id = session.get("user_id")
+
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT * FROM livros WHERE id_livro = :id"),
+            {"id": id_livro}
+        ).mappings().fetchone()
+
+    livro = dict(result)
+
+    return render_template(
+        "alteracao-livro.html",
+        name=user_name,
+        user_id=user_id,
+        livro=livro
+    )
+
+
+@app.route("/editar-livro/<int:id_livro>", methods=["POST"])
+@login_required
+def editar_livro(id_livro):
+    data = request.form
+
+    titulo = data.get("titulo")
+    subtitulo = data.get("subtitulo")
+    autor = data.get("autor")
+    editora = data.get("editora")
+    ano_publicacao = data.get("ano_publicacao")
+    genero = data.get("genero")
+    edicao = data.get("edicao")
+    isbn = data.get("isbn")
+    quantidade_estoque = data.get("quantidade_estoque")
+    preco_compra = data.get("preco_compra")
+    preco_emprestimo = data.get("preco_emprestimo")
+
+    disponivel_compra = 1 if data.get("disponivel_compra") == "on" else 0
+    disponivel_emprestimo = 1 if data.get("disponivel_emprestimo") == "on" else 0
+
+    with engine.connect() as conn:
+        existente = conn.execute(
+            text("""
+                SELECT 1 FROM livros 
+                WHERE isbn = :isbn AND id_livro != :id_livro
+            """),
+            {"isbn": isbn, "id_livro": id_livro}
+        ).fetchone()
+
+    if existente:
+        return render_template(
+            "alteracao-livro.html",
+            error=f"Já existe um livro com o ISBN {isbn}.",
+            livro=data
+        )
+
+    sql = text("""
+        UPDATE livros SET
+            titulo=:titulo,
+            subtitulo=:subtitulo,
+            autor=:autor,
+            editora=:editora,
+            ano_publicacao=:ano_publicacao,
+            genero=:genero,
+            edicao=:edicao,
+            isbn=:isbn,
+            quantidade_estoque=:quantidade_estoque,
+            preco_compra=:preco_compra,
+            preco_emprestimo=:preco_emprestimo,
+            disponivel_compra=:disponivel_compra,
+            disponivel_emprestimo=:disponivel_emprestimo
+        WHERE id_livro = :id_livro
+    """)
+
+    with engine.begin() as conn:
+        conn.execute(sql, {
+            "titulo": titulo,
+            "subtitulo": subtitulo,
+            "autor": autor,
+            "editora": editora,
+            "ano_publicacao": int(ano_publicacao) if ano_publicacao else None,
+            "genero": genero,
+            "edicao": edicao,
+            "isbn": isbn,
+            "quantidade_estoque": int(quantidade_estoque) if quantidade_estoque else 0,
+            "preco_compra": float(preco_compra) if preco_compra else 0.0,
+            "preco_emprestimo": float(preco_emprestimo) if preco_emprestimo else 0.0,
+            "disponivel_compra": disponivel_compra,
+            "disponivel_emprestimo": disponivel_emprestimo,
+            "id_livro": id_livro
+        })
+
+    return redirect(url_for("livro_detalhes", id_livro=id_livro))
+
+@app.route("/excluir-livro/<int:id_livro>", methods=["POST"])
+@login_required
+def excluir_livro(id_livro):
+    with engine.begin() as conn:
+        conn.execute(
+            text("DELETE FROM livros WHERE id_livro = :id"),
+            {"id": id_livro}
+        )
+
+    return redirect(url_for("livros_lista_page"))
 
 
 # req trazer livros

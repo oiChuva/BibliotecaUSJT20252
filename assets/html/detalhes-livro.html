@@ -15,6 +15,10 @@
         .card-livro { max-width: 700px; margin: 40px auto; }
 
 
+
+
+
+
     </style>
 </head>
 
@@ -118,7 +122,37 @@
         </div>
 
         <div class="card-footer text-end">
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalExcluir">
+                Excluir
+            </button>
+            <a href="/editar-livro/{{ livro.id_livro }}" class="btn btn-primary">Editar</a>
             <a href="/livros" class="btn btn-secondary">Voltar</a>
+        </div>
+
+        <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="modalExcluirLabel">Confirmar Exclusão</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        Tem certeza que deseja excluir o livro <strong>{{ livro.titulo }}</strong>?
+                        <br>Essa ação não poderá ser desfeita.
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+                        <form action="/excluir-livro/{{ livro.id_livro }}" method="POST">
+                            <button type="submit" class="btn btn-danger">Excluir</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
     </div>
