@@ -1,6 +1,6 @@
 from flask import render_template, session, redirect, url_for, request
 from sqlalchemy import text
-from app.database import engine
+from app import engine, pwd_context
 
 def login_user(pwd_context):
     email = request.form.get("email", "")
@@ -40,4 +40,4 @@ def login_user(pwd_context):
     # LOGIN OK → armazenar os dados na session e redirecionar para a pagina principal
     session["user_id"] = row.get("id_usuario")
     session["user_name"] = row.get("nome_completo")
-    return redirect(url_for("livros_lista_page"))
+    return redirect(url_for("livros_lista"))

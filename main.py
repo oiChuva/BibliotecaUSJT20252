@@ -45,7 +45,7 @@ def login_page():
 # login POST
 @app.route("/login", methods=["POST"])
 def login():
-    return login_user()
+    return login_user(pwd_context)
 
 @app.route("/livros", methods=["GET"])
 @login_required
@@ -59,7 +59,7 @@ def cadastro_livro_p():
 
 @app.route("/cadastro-livro", methods=["POST"])
 @login_required
-def cadastro_livro_f():
+def cadastro_livro():
     return cadastrar_livro_form()
 
 @app.route("/livro/<int:id_livro>", methods=["GET"])

@@ -1,6 +1,8 @@
-from flask import render_template, session, redirect, url_for, request
+from flask import render_template, redirect, url_for, request
 from sqlalchemy import text
-from app import engine
+
+from app.database import engine
+
 
 def editar_livro_form(id_livro):
     data = request.form
