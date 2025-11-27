@@ -1,6 +1,8 @@
-from flask import render_template, session, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, session
 from sqlalchemy import text
-from app import engine
+
+from app.database import engine
+
 
 def cadastrar_livro_form():
     data = request.form
@@ -31,7 +33,8 @@ def cadastrar_livro_form():
             return render_template(
                 "cadastro-livro.html",
                 error=f"O ISBN {isbn} já está cadastrado.",
-                form=data
+                form=data,
+                name=session.get("user_name")
             )
 
     ano_publicacao = int(ano_publicacao) if ano_publicacao else None
@@ -68,4 +71,4 @@ def cadastrar_livro_form():
             "disponivel_emprestimo": disponivel_emprestimo
         })
 
-    return redirect(url_for("livros_lista_page"))
+    return redirect(url_for("livros_lista"))

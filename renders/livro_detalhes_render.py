@@ -1,8 +1,11 @@
-from flask import render_template, session, redirect, url_for, request
-from sqlalchemy import text
-from app import engine
 import datetime
-from datetime import date
+from datetime import datetime, date
+
+from flask import render_template, session, redirect, url_for
+from sqlalchemy import text
+
+from app.database import engine
+
 
 def livro_detalhes_page(id_livro):
     user_name = session.get("user_name")

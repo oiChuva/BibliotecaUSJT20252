@@ -1,6 +1,8 @@
-from flask import render_template, session, redirect, url_for, request
+from flask import render_template, session
 from sqlalchemy import text
-from app import engine
+
+from app.database import engine
+
 
 def editar_livro_conn(id_livro):
     user_name = session.get("user_name")
