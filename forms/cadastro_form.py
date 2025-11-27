@@ -1,6 +1,6 @@
 from flask import render_template, session, redirect, url_for, request
 from sqlalchemy import text
-from app import engine
+from app.database import engine
 
 def cadastrar_livro_form():
     data = request.form
