@@ -1,6 +1,6 @@
 import json
 from sqlalchemy import text
-from app import engine
+from app.database import engine
 from datetime import date, datetime
 from flask import Response
 

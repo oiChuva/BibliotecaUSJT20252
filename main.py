@@ -54,12 +54,12 @@ def livros_lista():
 
 @app.route("/cadastro-livro", methods=["GET"])
 @login_required
-def cadastro_livro():
+def cadastro_livro_p():
     return cadastro_livro_page()
 
 @app.route("/cadastro-livro", methods=["POST"])
 @login_required
-def cadastro_livro():
+def cadastro_livro_f():
     return cadastrar_livro_form()
 
 @app.route("/livro/<int:id_livro>", methods=["GET"])

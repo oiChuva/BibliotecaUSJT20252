@@ -1,8 +1,8 @@
 from flask import render_template, session, redirect, url_for, request
 from sqlalchemy import text
-from app import engine, pwd_context
+from app.database import engine
 
-def login_user():
+def login_user(pwd_context):
     email = request.form.get("email", "")
     password = request.form.get("password", "")
 

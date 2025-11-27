@@ -1,6 +1,6 @@
 from flask import render_template, session, redirect, url_for, request
 from sqlalchemy import text
-from app import engine
+from app.database import engine
 
 def excluir_livro_conn(id_livro):
     with engine.begin() as conn:
