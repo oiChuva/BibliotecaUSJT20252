@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, session
 from sqlalchemy import text
 
 from app.database import engine
@@ -32,10 +32,14 @@ def editar_livro_form(id_livro):
         ).fetchone()
 
     if existente:
+        form_data = dict(data)
+        form_data["id_livro"] = id_livro
+
         return render_template(
             "alteracao-livro.html",
             error=f"Já existe um livro com o ISBN {isbn}.",
-            livro=data
+            livro=form_data,
+            name=session.get("user_name")
         )
 
     sql = text("""
