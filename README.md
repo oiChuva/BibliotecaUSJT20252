@@ -7,4 +7,4 @@ Integrantes:
 <br> Aymê Sousa Lozano - RA: 822148400
 <br> Kaique Mendonça - RA: 822163119
 <br> Leonardo Nascimento - RA: 822145990
-
+<br> Pablo Reinaldo de Sousa - RA: 822165659
